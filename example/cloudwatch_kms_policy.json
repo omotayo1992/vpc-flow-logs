@@ -6,7 +6,7 @@
             "Sid": "Enable IAM User Permissions",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "*"
+                "AWS": "arn:aws:iam::${account_num}:root"
             },
             "Action": "kms:*",
             "Resource": "*"
@@ -15,7 +15,7 @@
             "Sid": "Allow access for Key Administrators",
             "Effect": "Allow",
             "Principal": {
-                "AWS": ["*"]
+                "AWS": ["arn:aws:iam::${account_num}:root"]
             },
             "Action": [
                 "kms:Create*",
@@ -39,8 +39,7 @@
             "Sid": "Allow use of the key",
             "Effect": "Allow",
             "Principal": {
-                "AWS": ["*"
-                ]
+                "AWS": ["*"]
             },
             "Action": [
                 "kms:Encrypt",
@@ -55,7 +54,7 @@
             "Sid": "Allow attachment of persistent resources",
             "Effect": "Allow",
             "Principal": {
-                "AWS": ["*"]
+                "AWS": ["arn:aws:iam::${account_num}:root"]
             },
             "Action": [
                 "kms:CreateGrant",
