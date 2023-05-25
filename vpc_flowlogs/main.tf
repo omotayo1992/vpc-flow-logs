@@ -9,7 +9,20 @@ resource "aws_flow_log" "example" {
 resource "aws_cloudwatch_log_group" "example" {
   count = var.log_type == "cloudwatch" && length(var.log_destination_arn) == 0 ? 1 : 0
   name  = var.aws_cloudwatch_log_group_name[count.index]
+  kms_key_id = aws_kms_key.this_cloudwatch[count.index].arn 
 }
+
+resource "aws_kms_key" "this_cloudwatch" {
+  count = var.log_type == "cloudwatch" && length(var.log_destination_arn) == 0 ? 1 : 0
+  policy = var.policy_cloudwatch
+}
+
+resource "aws_kms_alias" "this" {
+  count = var.log_type == "cloudwatch" && length(var.log_destination_arn) == 0 ? 1 : 0
+  name          = var.cloudwatch_log_kms_alias
+  target_key_id = aws_kms_key.this_cloudwatch[count.index].key_id
+}
+
 
 resource "aws_iam_role" "example" {
   count = var.log_type == "cloudwatch" ? 1 : 0
@@ -73,3 +86,26 @@ resource "aws_s3_bucket" "example" {
 
 
 
+resource "aws_kms_key" "mykey" {
+  count  = var.log_type == "s3"  && length(var.log_destination_arn) == 0 ?  1 : 0 
+  policy = var.policy_cloudwatch
+  }
+
+resource "aws_kms_alias" "this_s3" {
+  count  = var.log_type == "s3"  && length(var.log_destination_arn) == 0 ?  1 : 0 
+  name          = var.s3_log_kms_alias
+  target_key_id = aws_kms_key.mykey[count.index].key_id
+}
+
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  count  = var.log_type == "s3"  && length(var.log_destination_arn) == 0 ?  1 : 0 
+  bucket = aws_s3_bucket.example[count.index].id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.mykey[count.index].arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
