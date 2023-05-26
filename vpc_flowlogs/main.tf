@@ -81,14 +81,14 @@ resource "aws_flow_log" "example_s3" {
 
 resource "aws_s3_bucket" "example" {
   count  = var.log_type == "s3"  && length(var.log_destination_arn) == 0 ?  1 : 0 
-  bucket = var.bucket_name[count.index]
+  bucket = var.bucket_name
 }
 
 
 
 resource "aws_kms_key" "mykey" {
   count  = var.log_type == "s3"  && length(var.log_destination_arn) == 0 ?  1 : 0 
-  policy = var.policy_cloudwatch
+  policy = var.policy_s3
   }
 
 resource "aws_kms_alias" "this_s3" {
@@ -104,7 +104,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.mykey[count.index].arn
+      kms_master_key_id = aws_kms_key.mykey[count.index].key_id
       sse_algorithm     = "aws:kms"
     }
   }

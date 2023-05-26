@@ -13,8 +13,7 @@ variable "log_destination_arn" {
 
 
 variable "bucket_name" {
-  default = ["test-flowlogs-bucket-199923838"]
-  type    = list(string)
+  type    = string
 }
 
 

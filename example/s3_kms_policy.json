@@ -39,7 +39,7 @@
             "Sid": "Allow use of the key",
             "Effect": "Allow",
             "Principal": {
-                "AWS": ["*"
+                "AWS": ["arn:aws:iam::${account_num}:root"
                 ]
             },
             "Action": [
